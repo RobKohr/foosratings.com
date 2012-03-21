@@ -1,0 +1,1 @@
+../common/template_functions.js
