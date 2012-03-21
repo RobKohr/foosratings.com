@@ -1,6 +1,0 @@
-<form method="post" action="/login">
-  <input type="hidden" name="form_submitted" value="login">
-  [%-input({name:'email'})%]
-  [%-input({type:'password', name:'password'})%]
-<input type="submit">
-</form>
