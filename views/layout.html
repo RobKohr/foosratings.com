@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    [% if(typeof(title)!='undefined') { %]
+    <title>[%=title%]</title>
+    [% } else { %]
+    <title>[%=config.pretty_name%] - [%=config.subtitle%]</title>
+    [% } %]
+    [% if(typeof(rss_link)!='undefined'){ %]
+    <link href="[%=rss_link%]" type="application/rss+xml" rel="alternate"> 
+    [% } %]
+    <link rel="stylesheet" href="/generic.css" /> 
+    <link rel="stylesheet" href="/main.css" /> 
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/jquery-lightbox-0.5/js/jquery.lightbox-0.5.js"></script>
+    <link rel="stylesheet" type="text/css" href="/jquery-lightbox-0.5/css/jquery.lightbox-0.5.css" media="screen" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-600316-17']);
+      _gaq.push(['_trackPageview']);
+      
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+
+    <script type="text/javascript">
+      $(function() {
+        $('#gallery a').lightBox(); // Select all links in object with gallery ID
+        $('a.lightbox').lightBox(); // Select all links in object with gallery ID
+      });
+    </script>
+    <script src="/utils.js"></script>
+    <script src="/generic.js"></script>
+    <script src="/jquery.qrcode.min.js"></script>
+    <script src="/main.js"></script>
+  </head>
+  <body>
+    <div id="page">
+      <div id="header">
+	<div class="title">
+	  <h1 style="color:yellow">
+	    <a href="/">[%=config.pretty_name%]</a>
+	  </h1>
+	  <h2>
+	    [%=config.subtitle%]
+	  </h2>
+	</div>
+	<ul class="nav">
+	  [% var nav = {'/users/register':'register', '/users/login':'login'}; %]
+	  [% if(session.user && session.user.username) {%]
+	    [% var nav = {'home':session.user.username, '/users/logout':'logout'}%]
+	  [% } %]
+	  [% for(var i in nav){ %]
+	  <li><a href="[%=i%]">[%=nav[i]%]</a></li>
+	  [% } %]
+	</ul>
+	<div style="clear:both"></div>
+      </div>
+
+      <div id="content">
+	[%-partial('error', {err:err})%]
+	<div id="body">
+	  [%-body%]
+	  [% if(typeof(uptime)!='undefined'){ %]
+	   [% var hour = 60*60; %]
+	   <!--uptime in hours = [%=uptime/hour%]-->
+	  [% } %]
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
+

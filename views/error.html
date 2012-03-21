@@ -1,1 +1,18 @@
-../../common/views/error.html
+[% if(typeof(error)!='undefined') { 
+  err.push(error);
+} %]
+
+[% if(err.length>0){ %]
+<ul class="error">
+  [% for(var i in err){ %]
+    <li>[%=err[i]%]</li>
+  [% } %]
+</ul>
+[% } %]
+[% if(notice.length>0){ %]
+<ul class="notice">
+  [% for(var i in notice){ %]
+    <li>[%-notice[i]%]</li>
+  [% } %]
+</ul>
+[% } %]
