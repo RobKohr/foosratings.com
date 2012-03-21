@@ -1,0 +1,12 @@
+{ "name" : "foosratings"
+,"description" : "source for foosratings.com"
+, "version":"0.0.1",
+,"main" : "foosratings.js"
+,"repository" :
+  {"type" : "git"
+  , "url" : "https://github.com:RobKohr/foosratings.com.git"
+  }
+, "dependencies" :{
+  
+}
+}
