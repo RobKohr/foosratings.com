@@ -1,0 +1,8 @@
+<form method="post" action="/users/register">
+  [%-input({name:'email', type:'email', note:'We do not spam. A valid email address is required.'}, sub)%]
+  [%-input({name:'password', type:'password'}, sub)%]
+  [%-input({name:'retype_password', type:'password'}, sub)%]
+  [%-input({name:'display_name'}, sub)%]
+  [%-captcha()%]
+<input type="submit" value="register">
+</form>
