@@ -54,9 +54,8 @@ function error(res, message){
 
 var users = require('./users.js');
 
-/*Custom Routes*/
 app.get('/', utils.setVals, function(req, res, next){
-    if(req.session.user && req.session.user.username){
+    if(users.loggedIn(req)){
 	res.writeHead(303, {
 	    'Location': '/home'
 	});
@@ -65,12 +64,14 @@ app.get('/', utils.setVals, function(req, res, next){
     res.render('index.html', req.vals)
 });
 
-app.get('/home', utils.setVals, function(req, res, next){
-    console.log(req.session);
 
+/*Custom Routes for the project*/
+
+app.get('/home', utils.setVals, function(req, res, next){
     res.render('home.html', req.vals);
 });
-/*end custom routes*/
+
+var custom = require('./match.js');//custom code for this project
 
 /*Get the party started...*/
 app.listen(config.port);

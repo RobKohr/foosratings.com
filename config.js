@@ -5,15 +5,15 @@ if(typeof(__dirname)=='undefined')
 else
     var parse_path = __dirname;
 
-exports.pretty_name = 'Battle Rating';
-exports.subtitle = 'Competive Rating For Friends';
-exports.about = 'Battle Rating tracks your skill level compared to your friends in any number of games.';
+exports.pretty_name = 'FoosRatings';
+exports.subtitle = 'Competive Foosball Rating For Friends';
+exports.about = exports.pretty_name+' tracks your skill level in foosball compared to your friends.';
 
 exports.password_salt = 'asjfljwelro23u4oslljfljwerasfxc';
-var domain = 'battlerating.com';
+var domain = 'foosratings.com';
 exports.email = 'support@'+domain;
 
-exports.db_name = 'battlerating';
+exports.db_name = 'foosratings';
 exports.port = 7010;
 var message = 'running prod';
 if(utils.is_substr('dev.'+domain, parse_path)){

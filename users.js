@@ -31,6 +31,12 @@ exports.checkLogin = function(req, res, next){
     });
 }
 
+exports.loggedIn = function(req){
+    if(req.session.user && req.session.user.username)
+	return true;
+    return false;
+}
+
 
 exports.register = function(req, res, next){
     var err = req.err;
@@ -125,3 +131,4 @@ app.get('/users/activate', utils.setVals, function(req, res, next){
 	return res.render('empty.html', req.vals);
     });
 });
+
