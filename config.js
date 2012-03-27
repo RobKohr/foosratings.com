@@ -5,6 +5,7 @@ if(typeof(__dirname)=='undefined')
 else
     var parse_path = __dirname;
 
+exports.ga_account = 'set_me';
 exports.pretty_name = 'FoosRatings';
 exports.subtitle = 'Competive Foosball Rating For Friends';
 exports.about = exports.pretty_name+' tracks your skill level in foosball compared to your friends.';

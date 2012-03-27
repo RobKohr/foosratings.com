@@ -22,12 +22,22 @@ exports.cleanTitle = function(path){
     return title;
 }
 
+exports.hidden = function(name, value){
+    if(!value)
+	value = '';
+    name = sanitizer.escape(name);
+    var id = name;
+    value = sanitizer.escape(value);
+    return '<input type="hidden" name="'+name+'" value="'+value+'" id="field_'+id+'">';
+}
+
+
 exports.input = function(p, input_defaults){
     if(!input_defaults)
 	input_defaults = {};
     if(!p.type) p.type='text';
     var extras = p.extras;
-    if(!p.label) p.label = utils.pretty(p.name);
+    if(typeof(p.label)=='undefined') p.label = utils.pretty(p.name);
     if(typeof(extras)=='undefined') extras = {};
     if(typeof(extras.required)=='undefined') extras.required = 'required';
     if(extras.required=='') delete extras.required;
@@ -42,7 +52,7 @@ exports.input = function(p, input_defaults){
     }
     
 
-    var input = '<input type="'+p.type+'" id="field_'+p.name+'" name="'+p.name+'" '+extras_str+' style="width:400px"/>';
+    var input = '<input type="'+p.type+'" id="field_'+p.name+'" name="'+p.name+'" '+extras_str+'/>';
     if(p.type=='textarea'){
 	if(!extras.value) extras.value = '';
       var input = '<textarea style="width:400px" id="field_'+p.name+'" name="'+p.name+'" '+extras_str+'>'+extras.value+'</textarea>';
@@ -99,7 +109,7 @@ exports.captcha = function(){
     var te = ctx.measureText(str);
     out = '<p>Type this code: <img height="30" src="' + canvas.toDataURL() + '" /> ';
     out+= '<input type="hidden" name="captcha_id" value="'+id+'"> ';
-    out+= 'here -&gt; <input name="captcha"></p>';
+    out+= '<input name="captcha"></p>';
     return out;
 }
 exports.checkCaptcha = function(id, ans){

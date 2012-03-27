@@ -1,0 +1,30 @@
+How things will work
+
+New match
+ 1v1 or 2v2
+  enter email addresses
+   create match
+    Match created (nickname :bla bla)
+     Pick winner
+      (Email sent. All players on the losing side must confirm the loss)
+Email
+ Confirm match
+ Reject match
+  Success in confirm/reject
+ View stats
+ Modify Account
+
+* Do css
+* Home screen info
+
+==Screens==
+New match
+  1v1 or 2v2
+  -> Select players for team one (select players)
+    ..team two
+   *New player option
+    * Match created. Please select which side one
+  --> Match recorded - Current player scores....
+  --->Email sent
+
+     

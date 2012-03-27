@@ -1,0 +1,28 @@
+<div id="match_types" class="gradient_buttons">
+[% var match_types = ['1_vs_1', '2_vs_2'] %]
+[% for(var i in match_types){ var match_type = match_types[i] %]
+  <div id="match_[%=match_type%]" class="gradient_button" data-value="[%=match_type%]">
+    <span>[%=utils.pretty(match_type)%]</span>
+  </div>
+[% } %]
+</div>
+<form method="post" id="form_match" style="display:none">
+  <img style="float:right;" src="/images/no_spam.png" onclick="alert('Emails are used to verify winners and losers. They are not distributed and will not be spammed.')">
+  <div style="clear:both"></div>
+  [%-hidden('game', 'foosball')%]
+  [%-hidden('variant', 'standard')%]
+  [%-hidden('match_type')%]
+  <p class="teams team_label">Team 1</p>
+  [%-input({name:'1_1', label:'Player\'s email', type:'email'})%]
+  <div class="teams">
+    [%-input({name:'1_2', label:'Player\'s email', type:'email'})%]
+  </div>
+  <p class="not_teams" id="vs">Vs</p> 
+  <p class="teams team_label">Team 2</p>
+  [%-input({name:'2_1', label:'Player\'s email', type:'email'})%]
+  <div class="teams">
+    [%-input({name:'2_2', label:'Player\'s email', type:'email'})%]
+  </div>
+  [%-captcha()%]
+  <input type="submit" value="Create match">
+</form>

@@ -14,7 +14,7 @@ utils.emailer  = email.server.connect({});
 
 var util   = require('util');
 var spawn = require('child_process').spawn;
-var sanitizer = require('sanitizer');
+sanitizer = require('sanitizer');
 var express = require('express');
 var request = require('request');
 var sys = require('sys');
@@ -52,26 +52,13 @@ function error(res, message){
     res.render('error.html', {error:message});
 }
 
-var users = require('./users.js');
-
 app.get('/', utils.setVals, function(req, res, next){
-    if(users.loggedIn(req)){
-	res.writeHead(303, {
-	    'Location': '/home'
-	});
-	return res.end();
-    }
     res.render('index.html', req.vals)
 });
 
-
-/*Custom Routes for the project*/
-
-app.get('/home', utils.setVals, function(req, res, next){
-    res.render('home.html', req.vals);
-});
-
 var custom = require('./match.js');//custom code for this project
+
+
 
 /*Get the party started...*/
 app.listen(config.port);

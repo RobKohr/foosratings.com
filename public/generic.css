@@ -4,6 +4,8 @@
     padding-left:1em;
 }
 
+
+
 .input_row{
     margin-top:1em;
 }
@@ -137,4 +139,13 @@ a:visited{
 a[href^="http://"] {
     background: url(/images/external.png) center right no-repeat;
     padding-right: 13px;
+}
+.input_container, .input_row{
+    width:100%;
+}
+
+input {
+    font-size: 1.4em;
+    border-radius:4px;
+    width:100%;
 }
