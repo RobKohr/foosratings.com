@@ -6,22 +6,22 @@
   </div>
 [% } %]
 </div>
-<form method="post" id="form_match" style="display:none">
+<form method="post" id="form_match" style="display:none" action="/match/create">
   <img style="float:right;" src="/images/no_spam.png" onclick="alert('Emails are used to verify winners and losers. They are not distributed and will not be spammed.')">
   <div style="clear:both"></div>
   [%-hidden('game', 'foosball')%]
   [%-hidden('variant', 'standard')%]
   [%-hidden('match_type')%]
   <p class="teams team_label">Team 1</p>
-  [%-input({name:'1_1', label:'Player\'s email', type:'email'})%]
+  [%-input({name:'teams[0][0]', label:'Player\'s email', type:'email'})%]
   <div class="teams">
-    [%-input({name:'1_2', label:'Player\'s email', type:'email'})%]
+    [%-input({name:'teams[0][1]', label:'Player\'s email', type:'email'})%]
   </div>
   <p class="not_teams" id="vs">Vs</p> 
   <p class="teams team_label">Team 2</p>
-  [%-input({name:'2_1', label:'Player\'s email', type:'email'})%]
+  [%-input({name:'teams[1][0]', label:'Player\'s email', type:'email'})%]
   <div class="teams">
-    [%-input({name:'2_2', label:'Player\'s email', type:'email'})%]
+    [%-input({name:'teams[1][1]', label:'Player\'s email', type:'email'})%]
   </div>
   [%-captcha()%]
   <input type="submit" value="Create match">

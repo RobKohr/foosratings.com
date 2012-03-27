@@ -13,6 +13,22 @@ if(typeof(jQuery)!='undefined'){
     })( jQuery );
 }
 
+Object.defineProperty(Object.prototype, 'descend', {
+    value: function(){
+	var keys = arguments;
+	var cur = this;
+	for(var i=0; i<keys.length; i++){
+	    var key = keys[i];
+	    var cur = cur[key];
+	    if(typeof(cur)=='undefined')
+		return cur;
+	}
+	return cur;
+    }
+});
+
+
+
 getTime = null;
 (function(exports){
     exports.filterObject = function(obj, props){

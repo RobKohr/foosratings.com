@@ -48,7 +48,9 @@ setInterval(function(){
 }, 1000);
 
 
-function error(res, message){
+function error(res, message, template){
+    if(!template)
+	template = 'error.html';
     res.render('error.html', {error:message});
 }
 

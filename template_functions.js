@@ -31,18 +31,18 @@ exports.hidden = function(name, value){
     return '<input type="hidden" name="'+name+'" value="'+value+'" id="field_'+id+'">';
 }
 
-
+exports.input_defaults = {};
 exports.input = function(p, input_defaults){
-    if(!input_defaults)
-	input_defaults = {};
+    if(input_defaults)
+	exports.input_defaults = input_defaults;
     if(!p.type) p.type='text';
     var extras = p.extras;
     if(typeof(p.label)=='undefined') p.label = utils.pretty(p.name);
     if(typeof(extras)=='undefined') extras = {};
     if(typeof(extras.required)=='undefined') extras.required = 'required';
     if(extras.required=='') delete extras.required;
-    if((!extras.value) && (input_defaults[p.name])){
-	extras.value = input_defaults[p.name];
+    if((!extras.value) && (exports.input_defaults[p.name])){
+	extras.value = exports.input_defaults[p.name];
     }
 
     var extras_str = '';

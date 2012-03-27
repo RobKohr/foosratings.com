@@ -6,9 +6,9 @@ $(document).ready(function(){
 	$('#match_types').hide();
 	if(match_type=='1_vs_1'){
 	    $('.not_teams').show();
-	    $('.teams').hide();
+	    $('.teams').remove();
 	}else{
-	    $('.not_teams').hide();
+	    $('.not_teams').remove();
 	    $('.teams').show();
 	}
 
