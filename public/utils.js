@@ -27,10 +27,28 @@ Object.defineProperty(Object.prototype, 'descend', {
     }
 });
 
+String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }
 
 
 getTime = null;
 (function(exports){
+    exports.descendUsingArray = function(data, arr){
+	if(arr.length == 0)
+	    return data;
+	if(arr.length == 1)
+	    return data[arr[0]];
+	if(!data[arr[0]]){
+	    return data[arr[0]];
+	}
+	return exports.descendUsingArray(data[arr[0]], arr.slice(1));
+    }
+
+    exports.descendUsingString = function(data, lookup_str){
+	var parts = utils.str_replace(']', '', lookup_str);
+	var parts = utils.explode('[', parts);
+	return exports.descendUsingArray(data, parts);
+    }
+
     exports.filterObject = function(obj, props){
 	var out = {};
 	for(var i in obj){

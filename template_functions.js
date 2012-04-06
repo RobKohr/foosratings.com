@@ -1,9 +1,10 @@
 var templates = {};
-
+var ejs = require('ejs');
+fs = require('fs');
 exports.render = function(file, data){
-    if(!templates[file])
-	templates[file] = fs.readFileSync('./views/'+file);
-    return ejs.render('hi <%=aa%> there', {aa:'This is test'});    
+    file = fs.readFileSync('./views/'+file, 'ascii'),
+    rendered = ejs.render(file, data);
+    return rendered;
 }
 
 exports.formatBitcoins = function(btc){
@@ -25,6 +26,12 @@ exports.cleanTitle = function(path){
 exports.hidden = function(name, value){
     if(!value)
 	value = '';
+    if(!value){
+	var val = utils.descendUsingString(exports.input_defaults, name);
+	if(val)
+	    value = val;
+    }
+
     name = sanitizer.escape(name);
     var id = name;
     value = sanitizer.escape(value);
@@ -32,19 +39,29 @@ exports.hidden = function(name, value){
 }
 
 exports.input_defaults = {};
+exports.setInputDefaults = function(input_defaults){
+    exports.input_defaults = input_defaults;
+}
+
 exports.input = function(p, input_defaults){
-    if(input_defaults)
-	exports.input_defaults = input_defaults;
+    if(!input_defaults)
+	input_defaults = exports.input_defaults;
+    
     if(!p.type) p.type='text';
     var extras = p.extras;
     if(typeof(p.label)=='undefined') p.label = utils.pretty(p.name);
     if(typeof(extras)=='undefined') extras = {};
     if(typeof(extras.required)=='undefined') extras.required = 'required';
     if(extras.required=='') delete extras.required;
-    if((!extras.value) && (exports.input_defaults[p.name])){
-	extras.value = exports.input_defaults[p.name];
+    if(!extras.value){
+	var val = utils.descendUsingString(input_defaults, p.name);
+	if(val)
+	    extras.value = val;
     }
 
+
+
+    console.log(p.name);
     var extras_str = '';
     for(var field in extras){
 	var val = extras[field];

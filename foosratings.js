@@ -27,6 +27,7 @@ db = require('./db.js');
 db.init(config.db_name);
 var start_time = getTime();
 v = require('./template_functions.js');
+template_functions = v;
 validate = require('./validate.js').validate;
 app = express.createServer();
 app.use(express.bodyParser());

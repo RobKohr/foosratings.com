@@ -1,6 +1,5 @@
 $(document).ready(function(){
-    $('#match_types div').click(function(){
-	var match_type = $(this).attr('data-value');
+    var setMatchType = function(match_type){
 	$('#field_match_type').val(match_type);
 	$('#form_match').show();
 	$('#match_types').hide();
@@ -11,6 +10,15 @@ $(document).ready(function(){
 	    $('.not_teams').remove();
 	    $('.teams').show();
 	}
+    }
+    var match_type = $('#field_match_type').val();
+    if((match_type)&&(match_type!='')){
+	setMatchType(match_type);
+    }
+	
 
+    $('#match_types div').click(function(){
+	var match_type = $(this).attr('data-value');
+	setMatchType(match_type);
     });
 });
