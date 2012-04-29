@@ -5,6 +5,7 @@ request = require('request');
 
 utils = require(pub+'/utils.js');
 p_utils = require('./p_utils.js');
+glicko = require('./glicko.js');
 
 for(var f in p_utils)
     utils[f] = p_utils[f];
@@ -49,10 +50,9 @@ setInterval(function(){
 }, 1000);
 
 
-function error(res, message, template){
-    if(!template)
-	template = 'error.html';
-    res.render('error.html', {error:message});
+error = function(res, message, template){
+    data = {err:[message], notice:[]};
+    return res.render('empty.html', data);
 }
 
 app.get('/', utils.setVals, function(req, res, next){
