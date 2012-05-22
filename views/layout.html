@@ -40,7 +40,7 @@
       <div id="header">
 	<div class="title">
 	  <h1 style="color:yellow">
-	    <a href="/">[%=config.pretty_name%]</a>
+	    <a href="/">[%=config.pretty_name%][% if(config.server=='dev'){ %] *dev* [% } %]</a>
 	  </h1>
 	  <h2>
 	    [%=config.subtitle%]

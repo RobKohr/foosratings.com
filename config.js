@@ -16,9 +16,11 @@ exports.email = 'support@'+domain;
 
 exports.db_name = 'foosratings';
 exports.port = 7010;
+exports.server = 'prod';
 var message = 'running prod';
 if(utils.is_substr('dev.'+domain, parse_path)){
     var message = 'running dev';
+    exports.server = 'dev';
     exports.db_name = exports.db_name+'_dev';
     exports.port += 1
 }
