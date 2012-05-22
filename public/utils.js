@@ -13,6 +13,32 @@ if(typeof(jQuery)!='undefined'){
     })( jQuery );
 }
 
+if(!Array.each){
+    Object.defineProperty(Array.prototype, 'each', {
+	value: function(callback){
+	    var arr = this;
+	    for(var i = 0; i<arr.length; i++){
+		var el = arr[i];
+		if(typeof(el)!='function')
+		    callback(el, i);
+	    }
+	}
+    });
+}
+if(!Object.each){
+    Object.defineProperty(Object.prototype, 'each', {
+	value: function(callback){
+	    var obj = this;
+	    for(var key in obj){
+		var el = obj[key];
+		if(typeof(el)!='function')
+		    callback(el, key);
+	    }
+	}
+    });
+}
+
+
 Object.defineProperty(Object.prototype, 'descend', {
     value: function(){
 	var keys = arguments;
@@ -32,6 +58,10 @@ String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }
 
 getTime = null;
 (function(exports){
+    exports.debug = function(data){
+	console.log(JSON.stringify(data, null, 4));
+    }
+
     exports.descendUsingArray = function(data, arr){
 	if(arr.length == 0)
 	    return data;
@@ -131,9 +161,9 @@ getTime = null;
 
     exports.last = function(obj){
 	var out = obj;
-	for(var i in obj){
-	    out = obj[i];
-	}
+	obj.each(function(a){
+	    out = a;
+	});
 	return out;
     }
 
@@ -449,6 +479,7 @@ getTime = null;
 	}
 	return false;
     }
+    exports.inArray = exports.in_array;
     exports.is_array = function(input){
 	return typeof(input)=='object'&&(input instanceof Array);
     }

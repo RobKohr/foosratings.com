@@ -1,0 +1,14 @@
+Who won the game "[%=match_name%]"?[% dashes = '----------------------------------'; %]
+[% for(var t=0; t<=1; t++){ %]
+[%=dashes%]
+
+If [% var amp = ''; for(var p=0; p<team_size; p++) { 
+    if((!teams)||(!teams[t])||(!teams[t][p]))
+      continue;
+   %][%=amp+teams[t][p]%][% amp = ' & '%][% } %] won click here:
+
+http://foosratings.com/match/set_winner?team=[%=t%]&submitter=[%=encodeURIComponent(player)%]&submit_code=[%=submit_code%]&_id=[%=_id%]
+[% } %]
+[%=dashes%]
+View your stats at:
+http://foosratings.com[%-statsLink(player, game)%]

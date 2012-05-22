@@ -3,45 +3,52 @@ var ejs = require('ejs')
 ejs.open = '[%';
 ejs.close = '%]';
 
+var statsLink = function(email,game){
+  var email = encodeURIComponent(email);
+  return '/stats?email='+email+'&game='+escape(game)+'&key='+utils.md5(email+keymaker);
+}
+
+
 var phrase_maker = require('./phrase_maker.js');
 app.get('/match/new', utils.setVals, function(req, res, next){
-
     res.render('match/new.html', req.vals);
 });
 
 app.get('/match/set_winner', utils.setVals, function(req, res, next){
-    console.log(req.query);
+    var q = req.query;
+    if(!q) q = {};
+    req.vals.query = q;
     var required_fields = ['team', 'submitter', 'submit_code', '_id'];
-    for(var i in required_fields){
-	var field = required_fields[i];
+    required_fields.each(function(field){
 	if(!req.query[field])
 	    return error(res, field + ' is a required field');
-    }
+    });
     db.c('match').findOne({_id:docId(req.query._id)}, function(err, match){
 	if(!match)
 	    return error(res, 'match not found');
-	var expected_submit_code = utils.md5(req.submitter+match.match_code);
-	if(req.submit_code != expected_submit_code)
-	    return error(res, 'Invalid Submit Code');
+	req.vals.match = match;
+	var expected_submit_code = utils.md5(q.submitter+match.match_code);
+	if(q.submit_code != expected_submit_code)
+	    return error(res, 'Invalid Submit Code ' + expected_submit_code + ' - '+ q.submit_code);
 	if(!match.player_responses)
 	    match.player_responses = {};
-	var team = Number(req.team);
+	var team = Number(q.team);
 	if((team!=0)&&(team!=1))
 	    return error(res, 'Invalid team');
-	match.player_responses[req.submitter] = team;
-	if(!utils.inArray(req.submitter, match.players))
+	match.player_responses[q.submitter] = team;
+	if(!utils.inArray(q.submitter, match.players))
 	    return error(res, 'You were not a player in this game');
 	var winning_team = match.teams[team];
 	var adjust_ratings = 0;
-	if(utils.inArray(req.submitter, winning_team)){
+	if(utils.inArray(q.submitter, winning_team)){
 	    if(!match.resolved){
-		req.vals.notice.push('Congratulation, you win! <br>For this match to be resolved and your rating adjusted, the other team must also recognize the loss');
+		req.vals.message = 'Congratulation, you win! <br>For this match to be resolved and your rating adjusted, the other team must also recognize the loss';
 	    }else{
-		req.vals.notice.push('Congratulation, you win! Your rating has now been adjusted!');
+		req.vals.message = 'Congratulation, you win! Your rating has now been adjusted!';
 	    }
 	}else{
-	    req.vals.notice.push('This match is now resolved and ratings have been adjusted. Better luck next time!');
-	    if(!match.resolved){
+	    req.vals.message = 'This match is now resolved and ratings have been adjusted. Better luck next time!';
+	    if((!match.resolved)||(!match.rating_adjusted)){
 		match.resolved = 1;
 		match.winner = team;
 		match.winning_team = match.teams[team];
@@ -52,42 +59,104 @@ app.get('/match/set_winner', utils.setVals, function(req, res, next){
 		adjust_ratings = 1;
 	    }
 	}
+	req.vals.statsLink = statsLink;
 	db.c('match').save(match);
 	if(adjust_ratings){
 	    exports.adjustRatings(
 		[match.winning_team, match.losing_team], 
+		match,
 		function(){
-		    showStats(req, res, next);
+		    setWinner(req, res, next);
 
 		}
 	    );
 	}else{
-	    showStats(req, res, next);
+	    setWinner(req, res, next);
 	}
     });
 });
 
-exports.adjustRatings = function(sorted_teams, callback){
-    var lookup = [];
-    for(var t in sorted_teams){
-	for(var p in sorted_teams[t]){
-	    var player = sorted_teams[t][p];	    
-	    players[player] = {_id:player};
-	    lookup.push({_id:player});
-	}
-    }
-
-    db.c('player').find({$or:lookup}).toArray(function(err, docs){
-	for(var i in docs){
-	    var player = docs[i];
-	    players[player._id] = player;
-	}
-	
+exports.adjustRatings = function(teams, match, callback){
+    console.log('a1');
+    teamsEmailsToTeamsPlayers(teams, match.game, function(teams){
+	glicko.teamMatch(teams, {match_id:docId(match._id)});
+	utils.debug(['After glicko', teams]);
+	savePlayersInTeams(teams, match.players);
+	callback();
     });
-
 }
 
-var showStats = function(req, res, next){
+savePlayersInTeams = function(teams, friends){
+    teams.each(function(team){
+	team.players.each(function(player, index){
+	    if(!player.friends)
+		player.friends = [];
+	    friends.each(function(friend){
+		if(!utils.inArray(friend, player.friends)){
+		    player.friends.push(friend);
+		}
+	    });
+
+	    db.c('player').save(player);
+	})
+    })
+}
+
+
+arrayOfArraysToFlatArray = function(arr){
+    var out = [];
+    console.log(arr);
+    arr.each(function(sub_arr){
+	sub_arr.each(function(el){
+	    out.push(el);
+	});
+    });
+    return out;
+}
+
+emailArrayToIdOrQuery = function(arr){
+    var els = [];
+    arr.each(function(email){
+	els.push({email:email});
+    });
+    return {$or:els};
+}
+//teams is nested array of emails. players if flat array of player objects
+//output teams in a format glicko.teamMatch can process
+formatTeamObjects = function(teams, players, game){
+    var player_lookup = {};
+    players.each(function(player){
+	player_lookup[player.email] = player;
+    });
+    teams.each(function(team, team_index){
+	var player_email_list = team;
+	team = {players:[], rank:team_index};
+	player_email_list.each(function(email){
+	    var player = player_lookup[email];
+	    if(!player)
+		player = {email:email, game:game};
+	    team.players.push(player);
+	});
+	teams[team_index] = team;
+    });
+    return teams;
+}
+
+//takes array of teams, with array of emails, and returns array of teams with player objs
+teamsEmailsToTeamsPlayers = function(teams, game, callback){
+    var player_emails = arrayOfArraysToFlatArray(teams);
+    var query = emailArrayToIdOrQuery(player_emails);
+    query.game = game;
+    var teams_ = teams;	
+    db.c('player').find(query).toArray(function(err, players){
+	var teams = teams_; //resolve scoping issue.
+	var teams = formatTeamObjects(teams, players, game);
+	callback(teams);
+    });
+}
+
+
+var setWinner = function(req, res, next){
     return res.render('match/set_winner.html', req.vals);
 }
 
@@ -97,32 +166,31 @@ app.post('/match/create', utils.setVals, function(req, res, next){
     var vals = req.vals;
     var err = vals.err;
     if(req.body){
-	var sub = req.body;
+	var body = req.body;
     }
-    vals.sub = sub;
-    console.log(sub);
-    validate('game', sub.game, err,
+    vals.body = body;
+    validate('game', body.game, err,
 	     [
 		 'isOneOf:foosball',
 	     ]);
-    validate('variant', sub.variant, err,
+    validate('variant', body.variant, err,
 	     [
 		 'isOneOf:standard',
 	     ]);
-    validate('match_type', sub.match_type, err,
+    validate('match_type', body.match_type, err,
 	     [
 		 'isOneOf:1_vs_1,2_vs_2',
 	     ]);
     if(err.length>0)
 	return res.render('match/new.html', req.vals);
     var team_size = 1;
-    if(sub.match_type=='2_v_2')
+    if(body.match_type=='2_vs_2')
 	team_size = 2;
-    sub.team_size = team_size;
+    body.team_size = team_size;
     var players = [];
     for(var t=0; t<=1; t++){
 	for(var p=0; p<team_size; p++){
-	    var player = sub.descend('teams', t, p);
+	    var player = body.descend('teams', t, p);
 	    player=player.toLowerCase().trim();
 	    validate('team '+(t+1)+': player '+(p+1), player, err,
 		     [
@@ -133,41 +201,46 @@ app.post('/match/create', utils.setVals, function(req, res, next){
 		players.push(player);
 	}
     }
-    sub.players = players;
+    body.players = players;
+    console.log(body);
+
     //validate captcha
     if(!req.no_captcha){
-	if(!v.checkCaptcha(sub.captcha_id, sub.captcha)){
+	if(!v.checkCaptcha(body.captcha_id, body.captcha)){
 	    err.push('Captcha did not match typed in code');
 	}
     }
-    sub.match_code = utils.randomString(20);
+    body.match_code = utils.randomString(20);
 
     if(err.length>0)
 	return res.render('match/new.html', req.vals);
 
-    sub.match_name = phrase_maker.project();
+    body.match_name = phrase_maker.project();
     var fields = ['game', 'variant', 'match_type', 'match_name', 'teams', 'players', 'match_code']
     var record = {};
     for(var i in fields){
 	var field = fields[i];
-	record[field] = sub[field];
+	record[field] = body[field];
     }
     db.c('match').save(record, function(err, record){
 	for(var p in players){
-	    var data = utils.cloneObject(sub);
+	    var data = utils.cloneObject(body);
 	    data.player = players[p];
-	    data.submit_code = utils.md5(data.player+sub.match_code);
+	    data.submit_code = utils.md5(data.player+body.match_code);
 	    data._id = record._id;
+	    data.game = record.game;
+	    data.statsLink = statsLink;
 	    var message = template_functions.render('match/email.txt', data);
 	    utils.emailer.send({
 		text:    message,
-		from:    "support@foosratings.com", 
+		from:    "match@foosratings.com", 
 		to:      data.player,
-		subject: 'Who won the '+sub.game+' match called '+sub.match_name+'?'
+		subject: 'Who won the '+body.game+' match called '+body.match_name+'?'
 	    });
 	}
     });
-    req.vals.match_name = sub.match_name;
+    req.vals.match_name = body.match_name;
+    req.vals.players = body.players;
     res.render('match/create.html', req.vals);
 
 });
