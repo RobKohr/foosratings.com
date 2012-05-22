@@ -114,7 +114,7 @@ exports.input = function(p, input_defaults){
 var captcha_answers = {};
 exports.captcha_answers = captcha_answers;
 exports.captcha = function(){
-    var chars = "abcdefghiklmnpqrstuvwxyz";
+    var chars = "abcdefghkmnpqrstuvwxyz";
     var id = utils.randomString(4, chars);
     var str = utils.randomString(4, chars);
     captcha_answers[id] = {answer:str, created:getTime()};
@@ -129,7 +129,9 @@ exports.captcha = function(){
     out+= '<input name="captcha"></p>';
     return out;
 }
+
 exports.checkCaptcha = function(id, ans){
+    ans = ans.toLowerCase();
     if(!captcha_answers[id])
 	return false;
 

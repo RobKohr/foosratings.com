@@ -1,3 +1,5 @@
+process.chdir(__dirname);
+
 fs = require('fs');
 
 var pub = __dirname + '/public';
@@ -30,6 +32,7 @@ var start_time = getTime();
 v = require('./template_functions.js');
 template_functions = v;
 validate = require('./validate.js').validate;
+keymaker = utils.randomString(40);
 app = express.createServer();
 app.use(express.bodyParser());
 app.use(express.static(pub));
@@ -45,6 +48,12 @@ app.set('view options', {
     close: '%]'
 });
 
+//prevent errors from killing the server
+process.on('uncaughtException', function (err) {
+    console.log(err.stack);
+});
+
+
 setInterval(function(){
     utils.killIfEdited(__filename);
 }, 1000);
@@ -56,10 +65,13 @@ error = function(res, message, template){
 }
 
 app.get('/', utils.setVals, function(req, res, next){
+    req.vals.layout = 'test.html';
     res.render('index.html', req.vals)
 });
 
-var custom = require('./match.js');//custom code for this project
+//custom code for this project
+match = require('./match.js');
+stats = require('./stats.js');
 
 
 

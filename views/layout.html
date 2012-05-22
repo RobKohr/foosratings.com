@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
+
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> 
     [% if(typeof(title)!='undefined') { %]
     <title>[%=title%]</title>
@@ -13,7 +14,11 @@
     <link rel="stylesheet" href="/generic.css" /> 
     <link rel="stylesheet" href="/default.css" /> 
     <link rel="stylesheet" href="/main.css" /> 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+
+    <script type="text/javascript" src="/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
+    <script src="/jquery.flot.js"></script>
+
     <script type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', '[%=config.ga_account%]']);

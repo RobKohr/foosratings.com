@@ -10,10 +10,10 @@ exports.setVals = function(req, res, next){
     vals.url = decodeURIComponent(utils.explode('?', req.url)[0]);
     vals.path = [];
     var els = utils.explode('/', vals.url);
-    for(var i in els){
-	if(els[i])
-	    vals.path.push(els[i]);
-    }
+    els.each(function(el){
+	if(el)
+	    vals.path.push(els);
+    });
     vals.body = req.body;
     vals.query = req.query;
     vals.sub = {};
@@ -22,12 +22,13 @@ exports.setVals = function(req, res, next){
 	vals.body,
 	req.session
     ];//each overrides the previous
-    for(var i in request_order){
-	var r = request_order[i];
-	for(var j in r){
-	    vals.sub[j] = r[j];
-	}	
-    }
+    request_order.each(function(r){
+	if(r){
+	    r.each(function(val, j){
+		vals.sub[j] = r[j];
+	    });
+	}
+    });
     vals.config = config;
     req.vals = vals;
     req.vals.vals = req.vals;

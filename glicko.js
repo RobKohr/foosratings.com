@@ -5,18 +5,20 @@
 //wrapper to make it easier to use as a node.js module
 (function(exports){
 
+    var init_settings = {
+	rating:1500,
+	rd:350,//rating deviation
+	vol:0.06//volitility
+    };
+
     exports.playerInit = function(player){
-	if(!player.rating)
-	    player.rating = 1500;
-	if(!player.rd) //rating deviation
-	    player.rd= 350;
-	if(!player.vol)//volitility
-	    player.vol = 0.06;
+	init_settings.each(function(val, key){
+	    player[key] = val;
+	});
 	player.rating2 = (player.rating - 1500)/173.7178
 	player.rd2 = player.rd/173.7178
 	return player;
     }
-
 
     /*
 Glicko-2 main function (attempts to follow the paper)
@@ -195,10 +197,14 @@ for example 0.5 to half the weight when you are playing on a team of two players
 	out.update.rating = out.change.rating + out.init.rating;
 	out.update.rd = out.change.rd + out.init.rd;
 	out.update.vol = out.change.vol + out.init.vol;	
-	out.timestamp = (new Date()).getTime() / 1000;//in seconds from unix epoch
+	out.timestamp = getTimestamp()//in seconds from unix epoch
 	return out;
     }
 
+
+    var getTimestamp = function(){
+	return (new Date()).getTime() / 1000;
+    }
 
 
 
@@ -235,9 +241,13 @@ returns {
           [array of just updated players (no team structure)]
         }
 */
-    exports.teamMatch = function(teams, rating_period, system_constant){
+    exports.teamMatch = function(teams, params){
 	var players = [];
+	if(!params)
+	    params = {};
 
+	var simple_teams = [];
+//	utils.debug(['begin team match - ', teams]);
 	teams.each(function(team, t1){
 	    team.players.each(function(p){
 		players.push(p);
@@ -269,9 +279,12 @@ returns {
 		    opponents.push(team_as_player);
 		});
 		var result = exports.calc(p, opponents, null, null, 1/num_players);
-		if(!p.result_history) 
-		    p.result_history = [];
-		p.result_history.push(result);
+		if(params.record_full_history){
+		    if(!p.result_history) 
+			p.result_history = [];
+		    console.log('result_history', p, typeof(p));
+		    p.result_history.push(result);
+		}
 		p.last_result = result;
 	    });
 	});
@@ -281,6 +294,24 @@ returns {
 	    update.each(function(val, key){
 		p[key] = val;
 	    });
+	    // a zero base rating that moves up as rd decreases
+	    p.nice_rating = 
+		p.rating - 
+		(p.rd*
+		 (init_settings.rating/init_settings.rd)
+		);
+
+	    if(!p.nice_rating_history)
+		p.nice_rating_history = [];
+	    var history_item = {rating:p.nice_rating, timestamp:getTimestamp()};
+	    if(params.match_id)
+		history_item.match_id = params.match_id;
+	    p.nice_rating_history.push(history_item);
+	    
+	    if(!params.record_full_last_result)
+		delete(p.last_result);
+	    
+
 	});
 	return {teams:teams, players:players};
     }
@@ -306,26 +337,6 @@ returns {
     var debug = function(v){
 	console.log(JSON.stringify(v));
     }
-
-
-    Array.prototype.each = function(callback){
-	var arr = this;
-	for(var i = 0; i<arr.length; i++){
-	    var el = arr[i];
-	    if(typeof(el)!='function')
-		callback(el, i);
-	}
-    }
-
-    Object.prototype.each = function(callback){
-	var obj = this;
-	for(var key in obj){
-	    var el = obj[key];
-	    if(typeof(el)!='function')
-		callback(el, key);
-	}
-    }
-
 
 
 })(typeof exports === 'undefined'? this['glicko']={}: exports);//end module
