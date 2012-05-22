@@ -1,3 +1,14 @@
 This is the code that runs foosratings.com. Feel free to contribute changes if you would like to help improve the site.
 
 If you are considering using this code yourself, please read the extremely brief license first.
+
+
+===TODO===
+Add these as requirements to the package.json:
+sanitizer
+emailjs
+request
+express
+canvas
+ejs
+mongodb

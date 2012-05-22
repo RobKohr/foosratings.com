@@ -65,7 +65,6 @@ error = function(res, message, template){
 }
 
 app.get('/', utils.setVals, function(req, res, next){
-    req.vals.layout = 'test.html';
     res.render('index.html', req.vals)
 });
 
