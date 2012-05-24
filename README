@@ -2,21 +2,3 @@ This is the code that runs foosratings.com. Feel free to contribute changes if y
 
 If you are considering using this code yourself, please read the extremely brief license first.
 
-
-===TODO===
-  * Auto suggest previous emails used
-    * Set up browser storage
-    * Store every time new email used
-    * Do suggestions
-  * Add ping pong and billiards
-  * Create a dev version
-  * link to github,
-  * post to hackernews
-Add these as requirements to the package.json:
-sanitizer
-emailjs
-request
-express
-canvas
-ejs
-mongodb

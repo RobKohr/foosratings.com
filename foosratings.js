@@ -32,7 +32,8 @@ var start_time = getTime();
 v = require('./template_functions.js');
 template_functions = v;
 validate = require('./validate.js').validate;
-keymaker = utils.randomString(40);
+secret = require('./secret.js'); //just passwords and salts
+keymaker = secret.keymaker;
 app = express.createServer();
 app.use(express.bodyParser());
 app.use(express.static(pub));

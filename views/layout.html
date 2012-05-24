@@ -17,6 +17,8 @@
 
     <script type="text/javascript" src="/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
+    <link type="text/css" href="/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css" rel="stylesheet" />
+
     <script src="/jquery.flot.js"></script>
 
     <script type="text/javascript">
@@ -53,7 +55,7 @@
 	  [% } %]
 	</ul>
 	<div style="clear:both"></div>
-      </div>
+      </div><!--#header-->
 
       <div id="content">
 	[%-partial('error', {err:err})%]
@@ -63,8 +65,11 @@
 	   [% var hour = 60*60; %]
 	   <!--uptime in hours = [%=uptime/hour%]-->
 	  [% } %]
-	</div>
-      </div>
+	</div><!--#body-->
+      </div><!--#content-->
+    </div><!--page-->
+    <div id="footer">
+      <a href="https://github.com/RobKohr/foosratings.com">Source Code</a>
     </div>
   </body>
 </html>

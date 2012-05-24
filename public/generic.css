@@ -4,14 +4,13 @@
     padding-left:1em;
 }
 
-
-
 .input_row{
     margin-top:1em;
 }
 body{
 
 }
+
 #header h1{
     font-size:1.1em;
     margin-bottom:0px;
@@ -43,7 +42,7 @@ body{
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     margin-top:10px;
-    
+    width:100%;    
     background: #f2f5f6; /* Old browsers */
 background: -moz-linear-gradient(top,  #f2f5f6 0%, #e3eaed 37%, #c8d7dc 100%); /* FF3.6+ */
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f2f5f6), color-stop(37%,#e3eaed), color-stop(100%,#c8d7dc)); /* Chrome,Safari4+ */
@@ -114,13 +113,14 @@ a:visited{
 }
 
 #body{
-    padding:1em;
+    padding:1em;    
 }
 
 
 #page{
-    width: 90%;
+    width:100%;
     margin: auto;
+    margin-top:0px;
 }
 
 #content{
@@ -148,4 +148,11 @@ input {
     font-size: 1.4em;
     border-radius:4px;
     width:100%;
+}
+
+#footer{
+    clear:both;
+    padding:1em;
+    font-size:80%;
+    border-top:1px solid #aaaaaa;
 }
