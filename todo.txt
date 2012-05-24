@@ -1,6 +1,11 @@
 Add ping pong and billiards
 add twitter
+Add about page
+New match button on home page
 post to hackernews
+
+
+
 Add these as requirements to the package.json:
 sanitizer
 emailjs

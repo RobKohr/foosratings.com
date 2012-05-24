@@ -7,8 +7,8 @@ If [% var amp = ''; for(var p=0; p<team_size; p++) {
       continue;
    %][%=amp+teams[t][p]%][% amp = ' & '%][% } %] won click here:
 
-http://foosratings.com/match/set_winner?team=[%=t%]&submitter=[%=encodeURIComponent(player)%]&submit_code=[%=submit_code%]&_id=[%=_id%]
+http://[%=config.domain%]/match/set_winner?team=[%=t%]&submitter=[%=encodeURIComponent(player)%]&submit_code=[%=submit_code%]&_id=[%=_id%]
 [% } %]
 [%=dashes%]
 View your stats at:
-http://foosratings.com[%-statsLink(player, game)%]
+http://[%=config.domain%][%-statsLink(player, game)%]

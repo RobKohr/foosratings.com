@@ -3,7 +3,7 @@ app.get('/stats', utils.setVals, function(req, res, next){
 //    var query = {email:req.query.email};
     db.c('player').findOne(query, function(err, player){
 	if(!player)
-	    return error(res, 'Player not found - '+JSON.stringify(query));
+	    return error(res, 'No resolved matches for player '+req.query.email+' in '+req.query.game);
 	player.valid_key = (utils.md5(req.query.email+keymaker))
 	req.vals.player = player;
 	var first = player.nice_rating_history[0].timestamp;
