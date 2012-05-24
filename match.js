@@ -135,7 +135,7 @@ app.post('/match/create', utils.setVals, function(req, res, next){
     body.match_code = utils.randomString(20);
 
     if(err.length>0)
-	return res.render('match/new.html', req.vals);
+	return newMatch(req, res, next);
 
     body.match_name = phrase_maker.project();
     var fields = ['game', 'variant', 'match_type', 'match_name', 'teams', 'players', 'match_code']
