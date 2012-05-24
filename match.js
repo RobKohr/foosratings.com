@@ -1,19 +1,18 @@
 var fs = require('fs');
 var ejs = require('ejs')
+var phrase_maker = require('./phrase_maker.js');
 ejs.open = '[%';
 ejs.close = '%]';
-var games = ['foosball', 'billiards', 'table tennis','air hockey','chess','go'];
-var statsLink = function(email,game){
-  var email = encodeURIComponent(email);
-  return '/stats?email='+email+'&game='+escape(game)+'&key='+utils.md5(email+keymaker);
-}
+var games = ['foosball', 'billiards', 'table tennis', 'chess', 'go'];
 
-
-var phrase_maker = require('./phrase_maker.js');
-app.get('/match/new', utils.setVals, function(req, res, next){
+//1st
+var newMatch = function(req, res, next){
     req.vals.games = games;
     res.render('match/new.html', req.vals);
-});
+}
+
+app.get('/match/new', utils.setVals, newMatch);
+
 
 app.get('/match/set_winner', utils.setVals, function(req, res, next){
     var q = req.query;
@@ -76,6 +75,109 @@ app.get('/match/set_winner', utils.setVals, function(req, res, next){
 	}
     });
 });
+
+
+
+var setWinner = function(req, res, next){
+    return res.render('match/set_winner.html', req.vals);
+}
+
+
+
+app.post('/match/create', utils.setVals, function(req, res, next){
+    var vals = req.vals;
+    var err = vals.err;
+    if(req.body){
+	var body = req.body;
+    }
+    vals.body = body;
+    validate('game', body.game, err,
+	     [
+		 'isOneOf:'+(games.join(','))
+	     ]);
+    validate('variant', body.variant, err,
+	     [
+		 'isOneOf:standard',
+	     ]);
+    validate('match_type', body.match_type, err,
+	     [
+		 'isOneOf:1_vs_1,2_vs_2',
+	     ]);
+    if(err.length>0)
+	return newMatch(req, res, next);
+    var team_size = 1;
+    if(body.match_type=='2_vs_2')
+	team_size = 2;
+    body.team_size = team_size;
+    var players = [];
+    for(var t=0; t<=1; t++){
+	for(var p=0; p<team_size; p++){
+	    var player = body.descend('teams', t, p);
+	    player=player.toLowerCase().trim();
+	    validate('team '+(t+1)+': player '+(p+1), player, err,
+		     [
+			 'requiredChar:@',
+			 'requiredChar:.',
+		     ]);
+	    if(player)
+		players.push(player);
+	}
+    }
+    body.players = players;
+    console.log(body);
+
+    //validate captcha
+    if(!req.no_captcha){
+	if(!v.checkCaptcha(body.captcha_id, body.captcha)){
+	    err.push('Captcha did not match typed in code');
+	}
+    }
+    body.match_code = utils.randomString(20);
+
+    if(err.length>0)
+	return res.render('match/new.html', req.vals);
+
+    body.match_name = phrase_maker.project();
+    var fields = ['game', 'variant', 'match_type', 'match_name', 'teams', 'players', 'match_code']
+    var record = {};
+    for(var i in fields){
+	var field = fields[i];
+	record[field] = body[field];
+    }
+    db.c('match').save(record, function(err, record){
+	for(var p in players){
+	    var data = utils.cloneObject(body);
+	    data.player = players[p];
+	    data.submit_code = utils.md5(data.player+body.match_code);
+	    data._id = record._id;
+	    data.game = record.game;
+	    data.statsLink = statsLink;
+	    var message = template_functions.render('match/email.txt', data);
+	    utils.emailer.send({
+		text:    message,
+		from:    "match@foosratings.com", 
+		to:      data.player,
+		subject: 'Who won the '+body.game+' match called '+body.match_name+'?'
+	    });
+	}
+    });
+    req.vals.match_name = body.match_name;
+    req.vals.players = body.players;
+    res.render('match/create.html', req.vals);
+
+});
+
+
+//2nd
+
+
+
+
+var statsLink = function(email,game){
+  var email = encodeURIComponent(email);
+  return '/stats?email='+email+'&game='+escape(game)+'&key='+utils.md5(email+keymaker);
+}
+
 
 exports.adjustRatings = function(teams, match, callback){
     console.log('a1');
@@ -155,95 +257,4 @@ teamsEmailsToTeamsPlayers = function(teams, game, callback){
 	callback(teams);
     });
 }
-
-
-var setWinner = function(req, res, next){
-    return res.render('match/set_winner.html', req.vals);
-}
-
-
-
-app.post('/match/create', utils.setVals, function(req, res, next){
-    var vals = req.vals;
-    var err = vals.err;
-    if(req.body){
-	var body = req.body;
-    }
-    vals.body = body;
-    validate('game', body.game, err,
-	     [
-		 'isOneOf:foosball,billiards,table_tennis,chess',
-	     ]);
-    validate('variant', body.variant, err,
-	     [
-		 'isOneOf:standard',
-	     ]);
-    validate('match_type', body.match_type, err,
-	     [
-		 'isOneOf:1_vs_1,2_vs_2',
-	     ]);
-    if(err.length>0)
-	return res.render('match/new.html', req.vals);
-    var team_size = 1;
-    if(body.match_type=='2_vs_2')
-	team_size = 2;
-    body.team_size = team_size;
-    var players = [];
-    for(var t=0; t<=1; t++){
-	for(var p=0; p<team_size; p++){
-	    var player = body.descend('teams', t, p);
-	    player=player.toLowerCase().trim();
-	    validate('team '+(t+1)+': player '+(p+1), player, err,
-		     [
-			 'requiredChar:@',
-			 'requiredChar:.',
-		     ]);
-	    if(player)
-		players.push(player);
-	}
-    }
-    body.players = players;
-    console.log(body);
-
-    //validate captcha
-    if(!req.no_captcha){
-	if(!v.checkCaptcha(body.captcha_id, body.captcha)){
-	    err.push('Captcha did not match typed in code');
-	}
-    }
-    body.match_code = utils.randomString(20);
-
-    if(err.length>0)
-	return res.render('match/new.html', req.vals);
-
-    body.match_name = phrase_maker.project();
-    var fields = ['game', 'variant', 'match_type', 'match_name', 'teams', 'players', 'match_code']
-    var record = {};
-    for(var i in fields){
-	var field = fields[i];
-	record[field] = body[field];
-    }
-    db.c('match').save(record, function(err, record){
-	for(var p in players){
-	    var data = utils.cloneObject(body);
-	    data.player = players[p];
-	    data.submit_code = utils.md5(data.player+body.match_code);
-	    data._id = record._id;
-	    data.game = record.game;
-	    data.statsLink = statsLink;
-	    var message = template_functions.render('match/email.txt', data);
-	    utils.emailer.send({
-		text:    message,
-		from:    "match@foosratings.com", 
-		to:      data.player,
-		subject: 'Who won the '+body.game+' match called '+body.match_name+'?'
-	    });
-	}
-    });
-    req.vals.match_name = body.match_name;
-    req.vals.players = body.players;
-    res.render('match/create.html', req.vals);
-
-});
-
 
