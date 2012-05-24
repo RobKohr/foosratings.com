@@ -1,4 +1,14 @@
 $(document).ready(function(){
+
+    var setGame = function(game){
+	$('#field_game').val(game);
+	hideThese(['#games', '#form_match']);
+	showThese(['#match_types']);
+	var match_type = $('#field_match_type').val();
+	if(match_type)
+	    setMatchType(match_type);
+    };
+
     var setMatchType = function(match_type){
 	$('#field_match_type').val(match_type);
 	$('#form_match').show();
@@ -12,6 +22,11 @@ $(document).ready(function(){
 	}
 	$('input[type="email"]').autocomplete({source:getFriends()});
     }
+    var game = $('#field_game').val();
+    if((match_type)&&(match_type!='')){
+	setGame(game);
+    }
+
     var match_type = $('#field_match_type').val();
     if((match_type)&&(match_type!='')){
 	setMatchType(match_type);
@@ -21,6 +36,11 @@ $(document).ready(function(){
 	var match_type = $(this).attr('data-value');
 	setMatchType(match_type);
     });
+    $('#games div').click(function(){
+	var game = $(this).attr('data-value');
+	setGame(game);
+    });
+
 });
 
 //friends is an array of friend emails

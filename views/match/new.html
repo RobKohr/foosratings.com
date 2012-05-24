@@ -1,6 +1,15 @@
 [% setInputDefaults(sub); %]
+<div id="games" class="gradient_buttons">
+<h3>Pick a game</h3>
+[% games.each(function(game){ %]
+  <div id="game_[%=game%]" class="gradient_button" data-value="[%=game%]">
+    <span>[%=utils.pretty(game)%]</span>
+  </div>
+[% }); %]
+<p style="clear:both"><a href="https://foosratings.uservoice.com/">Request a game type to be added</a></p>
+</div>
 
-<div id="match_types" class="gradient_buttons">
+<div id="match_types" class="gradient_buttons" style="display:none">
 [% var match_types = ['1_vs_1', '2_vs_2'] %]
 [% match_types.each(function(match_type){ %]
   <div id="match_[%=match_type%]" class="gradient_button" data-value="[%=match_type%]">

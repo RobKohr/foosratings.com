@@ -2,7 +2,7 @@ var fs = require('fs');
 var ejs = require('ejs')
 ejs.open = '[%';
 ejs.close = '%]';
-
+var games = ['foosball', 'billiards', 'table tennis','air hockey','chess','go'];
 var statsLink = function(email,game){
   var email = encodeURIComponent(email);
   return '/stats?email='+email+'&game='+escape(game)+'&key='+utils.md5(email+keymaker);
@@ -11,6 +11,7 @@ var statsLink = function(email,game){
 
 var phrase_maker = require('./phrase_maker.js');
 app.get('/match/new', utils.setVals, function(req, res, next){
+    req.vals.games = games;
     res.render('match/new.html', req.vals);
 });
 
@@ -171,7 +172,7 @@ app.post('/match/create', utils.setVals, function(req, res, next){
     vals.body = body;
     validate('game', body.game, err,
 	     [
-		 'isOneOf:foosball',
+		 'isOneOf:foosball,billiards,table_tennis,chess',
 	     ]);
     validate('variant', body.variant, err,
 	     [

@@ -22,3 +22,14 @@ function getCookie(name) {
 function deleteCookie(name) {
     setCookie(name,"",-1);
 }
+
+function hideThese(arrOfSelectors){
+    arrOfSelectors.each(function(sel){
+	$(sel).hide();
+    });
+}
+function showThese(arrOfSelectors){
+    arrOfSelectors.each(function(sel){
+	$(sel).show();
+    });
+}
