@@ -2,4 +2,6 @@ variables use underscore_style
 functions use camelCase
 
 
-Modules should be ordered where 1st order functions are at the top, and then 2nd order functions (things that the 1st order functions call) after that, and so on.
+Modules should be ordered where 1st order functions are at the top, 
+and then 2nd order functions (things that the 1st order functions call) 
+after that, and so on.
