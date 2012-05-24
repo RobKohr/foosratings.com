@@ -1,6 +1,9 @@
 variables use underscore_style
 functions use camelCase
 
+module code goes in root directory
+
+ejs templates go in views/MODULE_NAME/
 
 Modules should be ordered where 1st order functions are at the top, 
 and then 2nd order functions (things that the 1st order functions call) 
