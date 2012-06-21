@@ -2,7 +2,7 @@ $(document).ready(function(){
 
     var setGame = function(game){
 	$('#field_game').val(game);
-	hideThese(['#games', '#form_match']);
+	hideThese(['#games', '#form_match', '#about']);
 	showThese(['#match_types']);
 	var match_type = $('#field_match_type').val();
 	if(match_type)

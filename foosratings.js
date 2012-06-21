@@ -66,7 +66,7 @@ error = function(res, message, template){
 }
 
 app.get('/', utils.setVals, function(req, res, next){
-    res.render('index.html', req.vals)
+    return res.redirect('/match/new?from=home');
 });
 
 //custom code for this project

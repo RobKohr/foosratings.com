@@ -7,8 +7,8 @@ else
 
 exports.ga_account = 'set_me';
 exports.pretty_name = 'FoosRatings';
-exports.subtitle = 'Competitive Foosball Ratings For Friends';
-exports.about = exports.pretty_name+' tracks your skill level in foosball compared to your friends.';
+exports.subtitle = 'Competitive Ratings For Friends';
+exports.about = exports.pretty_name+' tracks your skill level in foosball and other games compared to your friends.';
 
 exports.password_salt = 'asjfljwelro23u4oslljfljwerasfxc';
 var domain = 'foosratings.com';

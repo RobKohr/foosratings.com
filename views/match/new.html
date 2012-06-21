@@ -1,3 +1,6 @@
+[% if(query.from=='home'){ %]
+  [%-partial('about', {})%]
+[% } %]
 [% setInputDefaults(sub); %]
 <div id="games" class="gradient_buttons">
 <h3>Pick a game</h3>
